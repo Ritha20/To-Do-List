@@ -240,6 +240,90 @@
             taskInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') addTask();
             });
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active state
+                    filterBtns.forEach(b => {
+                        b.classList.remove('active', 'bg-indigo-100', 'text-indigo-700', 
+                                          'dark:bg-indigo-900', 'dark:text-indigo-200');
+                        b.classList.add('bg-gray-200', 'text-gray-700', 
+                                       'dark:bg-gray-600', 'dark:text-gray-300');
+                    });
+                    btn.classList.remove('bg-gray-200', 'text-gray-700',
+                                       'dark:bg-gray-600', 'dark:text-gray-300');
+                    btn.classList.add('active', 'bg-indigo-100', 'text-indigo-700',
+                                    'dark:bg-indigo-900', 'dark:text-indigo-200');
+                    
+                    // Apply filter
+                    const filter = btn.getAttribute('data-filter');
+                    updateTaskList(filter);
+                });
+            });
+
+            clearCompletedBtn.addEventListener('click', clearCompletedTasks);
+            
+            // Dark mode toggle
+            darkToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('dark-mode', 'true');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('dark-mode', 'false');
+                }
+            });
+        }
+
+        // Add a new task
+        function addTask() {
+            const taskText = taskInput.value.trim();
+            const priority = prioritySelect.value;
+            
+            if (taskText) {
+                const newTask = {
+                    id: Date.now(),
+                    text: taskText,
+                    completed: false,
+                    priority: priority,
+                    date: new Date().toISOString()
+                };
+                
+                tasks.push(newTask);
+                saveTasks();
+                updateTaskList();
+                updateTaskCount();
+                
+                // Clear input
+                taskInput.value = '';
+                taskInput.focus();
+            }
+        }
+
+        // Update task list in the UI
+        function updateTaskList(filter = 'all') {
+            // Filter tasks based on selected filter
+            let filteredTasks = tasks;
+            if (filter === 'active') {
+                filteredTasks = tasks.filter(task => !task.completed);
+            } else if (filter === 'completed') {
+                filteredTasks = tasks.filter(task => task.completed);
+            }
+            
+            // Clear the container
+            tasksContainer.innerHTML = '';
+            
+            if (filteredTasks.length === 0) {
+                tasksContainer.appendChild(emptyState);
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            // Add tasks to the container
+            filteredTasks.forEach(task => {
+                const taskEl = document.createElement('div');
+                taskEl.className = `task-item bg-white dark:bg-gray-700 p-3 sm:p-4 rounded-lg border dark:border-gray-600 flex items-center justify-between fade-in priority-${task.priority}`;
 </script>
 
 
