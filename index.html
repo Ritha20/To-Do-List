@@ -324,6 +324,78 @@
             filteredTasks.forEach(task => {
                 const taskEl = document.createElement('div');
                 taskEl.className = `task-item bg-white dark:bg-gray-700 p-3 sm:p-4 rounded-lg border dark:border-gray-600 flex items-center justify-between fade-in priority-${task.priority}`;
+                taskEl.innerHTML = `
+                    <div class="flex items-center flex-grow mr-2">
+                        <button class="complete-btn w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 ${task.completed ? 'bg-green-500 border-green-500' : 'border-gray-300 dark:border-gray-500'} flex items-center justify-center mr-3 sm:mr-4 focus:outline-none flex-shrink-0">
+                            ${task.completed ? '<i class="fas fa-check text-white text-xs"></i>' : ''}
+                        </button>
+                        <span class="task-text ${task.completed ? 'task-completed text-gray-500 dark:text-gray-400' : 'text-gray-800 dark:text-gray-200'} text-sm sm:text-base break-words overflow-hidden">${task.text}</span>
+                    </div>
+                    <div class="flex items-center flex-shrink-0">
+                        <span class="priority-badge mr-3 sm:mr-4 text-xs font-semibold px-2 py-1 rounded-full ${task.priority === 'high' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' : task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'} hidden sm:inline-block">
+                            ${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+                        </span>
+                        <button class="delete-btn text-gray-400 hover:text-red-500 dark:hover:text-red-400">
+                            <i class="fas fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                `;
+                
+                tasksContainer.appendChild(taskEl);
+                
+                // Add event listeners to the buttons
+                const completeBtn = taskEl.querySelector('.complete-btn');
+                const deleteBtn = taskEl.querySelector('.delete-btn');
+                
+                completeBtn.addEventListener('click', () => toggleComplete(task.id));
+                deleteBtn.addEventListener('click', () => deleteTask(task.id));
+            });
+        }
+
+        // Toggle task completion
+        function toggleComplete(taskId) {
+            tasks = tasks.map(task => {
+                if (task.id === taskId) {
+                    return { ...task, completed: !task.completed };
+                }
+                return task;
+            });
+            
+            saveTasks();
+            updateTaskList();
+            updateTaskCount();
+        }
+
+        // Delete a task
+        function deleteTask(taskId) {
+            tasks = tasks.filter(task => task.id !== taskId);
+            saveTasks();
+            updateTaskList();
+            updateTaskCount();
+        }
+
+        // Clear completed tasks
+        function clearCompletedTasks() {
+            tasks = tasks.filter(task => !task.completed);
+            saveTasks();
+            updateTaskList();
+            updateTaskCount();
+        }
+
+        // Update task count
+        function updateTaskCount() {
+            totalTasksEl.textContent = tasks.length;
+            const completedCount = tasks.filter(task => task.completed).length;
+            completedTasksEl.textContent = completedCount;
+        }
+
+        // Save tasks to localStorage
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // Initialize the app
+        init();
 </script>
 
 
