@@ -27,3 +27,7 @@ TECHNOLOGIES I USED
 .HTML5
 .Tailwind CSS
 .JavaScript
+
+
+screenshot:
+![Image Alt](https://github.com/Ritha20/To-Do-List/blob/c53e33315a4b684bf17f642cd42a38fa3b1415fb/Screenshot%202025-09-21%20at%2021.55.51.png)
